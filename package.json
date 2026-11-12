@@ -1,0 +1,25 @@
+{
+  "name": "dhakaspace",
+  "version": "0.1.0",
+  "description": "Dhaka City Home, Office, and Shop rental platform with AI Concierge and SDLC automation",
+  "scripts": {
+    "sdlc:check": "bash ./.agents/plugins/dhaka-sdlc-kit/skills/git-github-sdlc/scripts/sdlc-check.sh",
+    "install:all": "npm install && (cd server && npm install) && (cd client && npm install)",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "(cd server && npm run build) && (cd client && npm run build)"
+  },
+  "keywords": [
+    "mern",
+    "dhaka",
+    "rental",
+    "antigravity",
+    "skills",
+    "plugins",
+    "mcp",
+    "google-genai",
+    "adk"
+  ],
+  "author": "KaziShahHamza",
+  "license": "MIT"
+}

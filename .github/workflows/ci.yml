@@ -1,0 +1,39 @@
+name: DhakaSpace CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  sdlc-and-build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: 20
+
+    - name: Run SDLC Pre-Commit Checks
+      run: |
+        chmod +x .agents/plugins/dhaka-sdlc-kit/skills/git-github-sdlc/scripts/sdlc-check.sh
+        ./.agents/plugins/dhaka-sdlc-kit/skills/git-github-sdlc/scripts/sdlc-check.sh
+
+    - name: Build Server
+      if: hashFiles('server/package.json') != ''
+      run: |
+        cd server
+        npm ci || npm install
+        npm run build --if-present
+
+    - name: Build Client
+      if: hashFiles('client/package.json') != ''
+      run: |
+        cd client
+        npm ci || npm install
+        npm run build --if-present

@@ -1,0 +1,11 @@
+{
+  "name": "dhaka-sdlc-kit",
+  "displayName": "DhakaSpace SDLC & Rental Kit",
+  "version": "0.1.0",
+  "description": "Bundles Git/GitHub SDLC workflows, Code Review agent guidelines, Dhaka rental domain skills, and the DhakaSpace MCP server.",
+  "suggestedPrompts": [
+    "Run the SDLC pre-commit check and invoke the code-reviewer subagent on current changes",
+    "Audit Dhaka rental listings for realistic BDT pricing and neighborhood rules",
+    "Start a new feature branch following our Git/GitHub SDLC skill"
+  ]
+}
