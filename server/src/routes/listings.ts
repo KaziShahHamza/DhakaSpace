@@ -5,19 +5,19 @@ import { Listing } from "../models/Listing";
 export const listingsRouter = Router();
 
 const createListingSchema = z.object({
-  title: z.string().min(5, "Title must be at least 5 characters"),
+  title: z.string().min(3, "Title must be at least 3 characters"),
   category: z.enum(["home", "office", "shop"]),
   area: z.enum(["Gulshan", "Banani", "Dhanmondi", "Mirpur", "Uttara", "Motijheel"]),
-  address: z.string().min(5),
+  address: z.string().min(3, "Address must be at least 3 characters"),
   rentBdt: z.number().positive("Rent must be positive in BDT"),
   advanceMonths: z.number().min(1).default(2),
   sizeSqft: z.number().positive("Size must be positive in sqft"),
-  bedrooms: z.number().optional(),
+  bedrooms: z.number().nullable().optional(),
   floor: z.string().default("1st Floor"),
   amenities: z.array(z.string()).default([]),
-  description: z.string().min(10),
-  contactName: z.string().min(2),
-  contactPhone: z.string().min(6),
+  description: z.string().min(5, "Description must be at least 5 characters"),
+  contactName: z.string().min(2, "Contact name must be at least 2 characters"),
+  contactPhone: z.string().min(6, "Valid contact phone is required"),
 });
 
 // GET /api/listings - Filter & Search
@@ -114,7 +114,14 @@ listingsRouter.post("/", async (req: Request, res: Response, next: NextFunction)
     res.status(201).json({ success: true, data: newListing });
   } catch (error) {
     if (error instanceof z.ZodError) {
-      return res.status(400).json({ success: false, errors: error.errors });
+      const formattedMsg = error.errors
+        .map((e) => `${e.path.join(".") || "field"}: ${e.message}`)
+        .join(", ");
+      return res.status(400).json({
+        success: false,
+        message: formattedMsg,
+        errors: error.errors,
+      });
     }
     next(error);
   }

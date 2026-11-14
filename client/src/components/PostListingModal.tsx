@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { X, Sparkles } from "lucide-react";
+import { X, Sparkles, CheckCircle2 } from "lucide-react";
 import { ListingCategory, DhakaArea } from "../types";
 
 interface PostListingModalProps {
@@ -33,8 +33,8 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
   const [floor, setFloor] = useState("3rd Floor");
   const [amenitiesInput, setAmenitiesInput] = useState("Lift, Generator Backup, 24/7 Security");
   const [description, setDescription] = useState("");
-  const [contactName, setContactName] = useState("");
-  const [contactPhone, setContactPhone] = useState("");
+  const [contactName, setContactName] = useState("Property Owner");
+  const [contactPhone, setContactPhone] = useState("+8801700000000");
 
   // AI Autofill state
   const [aiNotes, setAiNotes] = useState("");
@@ -42,6 +42,7 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
   const [aiError, setAiError] = useState<string | null>(null);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   if (!isOpen) return null;
@@ -78,6 +79,8 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
           setAmenitiesInput(item.amenities.join(", "));
         }
         if (item.description) setDescription(item.description);
+        if (item.contactName) setContactName(item.contactName);
+        if (item.contactPhone) setContactPhone(item.contactPhone);
       }
     } catch (err: unknown) {
       setAiError(err instanceof Error ? err.message : "AI autofill request failed");
@@ -121,11 +124,24 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
 
       const data = await res.json();
       if (!res.ok) {
-        throw new Error(data.message || "Failed to create listing");
+        const errMsg =
+          data.message ||
+          (data.errors &&
+            data.errors
+              .map((e: { path?: string[]; message: string }) =>
+                `${e.path?.join(".") || "field"}: ${e.message}`
+              )
+              .join(", ")) ||
+          "Failed to create listing";
+        throw new Error(errMsg);
       }
 
+      setIsSuccess(true);
       onListingCreated();
-      onClose();
+      setTimeout(() => {
+        setIsSuccess(false);
+        onClose();
+      }, 1500);
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : "Error creating listing");
     } finally {
@@ -155,7 +171,20 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
         </div>
 
         {/* Scrollable Form */}
-        <div className="p-6 overflow-y-auto space-y-6">
+        {isSuccess ? (
+          <div className="p-12 text-center space-y-4">
+            <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto shadow-sm">
+              <CheckCircle2 className="w-10 h-10" />
+            </div>
+            <h3 className="text-xl font-bold text-gray-900">
+              Dhaka Listing Published Successfully!
+            </h3>
+            <p className="text-sm text-gray-500 max-w-sm mx-auto">
+              Your property is now live in the DhakaSpace catalog and available for verified renters.
+            </p>
+          </div>
+        ) : (
+          <div className="p-6 overflow-y-auto space-y-6">
           {/* AI Autofill Assistant Box */}
           <div className="bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-200/80 rounded-2xl p-4">
             <div className="flex items-center space-x-2 text-emerald-800 font-bold text-sm mb-1.5">
@@ -416,6 +445,7 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
             </div>
           </form>
         </div>
+        )}
       </div>
     </div>
   );
