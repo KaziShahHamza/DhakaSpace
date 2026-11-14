@@ -11,8 +11,8 @@ This document is the single source of truth for the project lifecycle, architect
 | **Phase 1** | **Agentic SDLC & Workspace Tooling** | Git, GitHub Actions, Rules, Skills, Plugins, Subagents | ✅ **Completed** |
 | **Phase 2** | **MERN Core Rental Platform** | Node.js, Express, MongoDB/Mongoose, React, Vite, Tailwind | ✅ **Completed** |
 | **Phase 3** | **Custom Dhaka Rental MCP Server** | Model Context Protocol (`@modelcontextprotocol/sdk`), Stdio | ✅ **Completed** |
-| **Phase 4** | **Google GenAI SDK & ADK Concierge** | `@google/genai` (Structured Outputs), `@google/adk` (Agent) | ⏳ **In Progress (Next)** |
-| **Phase 5** | **Live In-Browser Verification** | Chrome DevTools MCP (`chrome-devtools`) | 🔮 Upcoming |
+| **Phase 4** | **Google GenAI SDK & ADK Concierge** | `@google/genai` (Structured Outputs), `@google/adk` (Agent) | ✅ **Completed** |
+| **Phase 5** | **Live In-Browser Verification** | Chrome DevTools MCP (`chrome-devtools`) | ⏳ **In Progress (Next)** |
 
 ---
 
@@ -49,12 +49,15 @@ This document is the single source of truth for the project lifecycle, architect
 - Tested end-to-end via `mcp-server/src/test-client.ts` over Stdio transport.
 - Code reviewed and approved by `code-reviewer` subagent.
 
-### ⏳ Phase 4: Google GenAI SDK & Google ADK Integration
-- **`@google/genai` Smart Autofill**: `POST /api/ai/autofill` using `gemini-3.8-flash` with JSON Schema structured output to turn landlord notes into listing fields.
-- **`@google/adk` AI Concierge**: `POST /api/ai/chat` running an ADK Agent with tool-calling capabilities against Dhaka listings and area stats.
-- Wire frontend Concierge Drawer and Post Listing form to backend AI endpoints.
-- Run SDLC check + `code-reviewer` subagent audit and commit.
+### ✅ Phase 4: Google GenAI SDK & Google ADK Integration
+- **`@google/genai` Smart Autofill**: `POST /api/ai/autofill` using `gemini-3.8-flash` with JSON Schema structured output to extract and normalize Dhaka shorthand notes into verified form fields.
+- **`@google/adk` AI Concierge**: `POST /api/ai/chat` running an intelligent agent with function declarations (`Type.OBJECT`, `Type.STRING`, `Type.NUMBER`) and multi-turn session memory:
+  - `search_dhaka_listings`: Queries MongoDB for properties.
+  - `get_dhaka_area_stats`: Computes market averages.
+  - `book_property_visit`: Books visits directly into MongoDB inquiries collection.
+- Frontend integrated: Connected Landlord "✨ AI Autofill" button and Renter "Dhaka Rental Concierge" chat drawer with visual tool execution badges (`⚡ Tool: ...`).
+- Code reviewed and approved by `code-reviewer` subagent.
 
-### 🔮 Phase 5: End-to-End Verification with Chrome DevTools MCP
+### ⏳ Phase 5: End-to-End Verification with Chrome DevTools MCP
 - Spin up app and launch Chrome DevTools MCP.
 - Audit console messages, network calls, filter interactions, and AI chat flow in real browser session.
