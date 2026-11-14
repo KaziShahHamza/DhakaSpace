@@ -11,6 +11,7 @@ Welcome to **DhakaSpace**, a rental platform designed for Dhaka City (Homes, Off
 - `mcp-server/`: Stdio MCP server exposing Dhaka real-estate data & market statistics tools.
 - `.agents/`: Antigravity workspace customizations (Plugins, Skills, Rules, and Subagents).
 - `scripts/`: Monorepo build, test, and SDLC automation scripts.
+- `ROADMAP.md`: Official project phases, milestones, and development status.
 
 ---
 

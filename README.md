@@ -27,7 +27,8 @@ Designed as a learning and demonstration project for:
 ├── client/                          # React + Vite + Tailwind CSS frontend
 ├── server/                          # Express + MongoDB + GenAI/ADK backend
 ├── mcp-server/                      # Stdio MCP Server for Dhaka real estate
-└── AGENTS.md                        # Root workspace rules
+├── AGENTS.md                        # Root workspace rules
+└── ROADMAP.md                       # Project phases & milestone tracker
 ```
 
 ---
