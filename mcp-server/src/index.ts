@@ -31,6 +31,33 @@ const AreaSummarySchema = z.object({
     .optional(),
 });
 
+const TenancyDeedSchema = z.object({
+  category: z.enum(["home", "office", "shop"]),
+  area: z.enum([
+    "Gulshan",
+    "Banani",
+    "Dhanmondi",
+    "Mirpur",
+    "Uttara",
+    "Motijheel",
+  ]),
+  monthlyRentBdt: z.number().positive(),
+  advanceMonths: z.number().int().min(1).max(24).default(2),
+  leaseDurationMonths: z.number().int().min(6).max(120).default(12),
+  tenantType: z
+    .enum(["family", "bachelor", "corporate", "retail"])
+    .optional(),
+  landlordName: z.string().optional(),
+  tenantName: z.string().optional(),
+});
+
+const HoldingTaxSchema = z.object({
+  cityCorporation: z.enum(["DNCC", "DSCC"]),
+  monthlyRentBdt: z.number().positive(),
+  category: z.enum(["home", "office", "shop"]),
+  ownerOccupied: z.boolean().default(false),
+});
+
 // Benchmark ranges (BDT / sqft) defined in dhaka-rental-domain skill
 const NEIGHBORHOOD_BENCHMARKS: Record<
   DhakaArea,
@@ -148,6 +175,89 @@ const TOOLS: Tool[] = [
           description: "Area to audit or leave empty for citywide audit",
         },
       },
+    },
+  },
+  {
+    name: "dhaka_generate_tenancy_deed",
+    description:
+      "Generate Bangladesh Premises Rent Control Act (1991) compliant tenancy deed clauses and summary for Dhaka properties.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        category: {
+          type: "string",
+          enum: ["home", "office", "shop"],
+          description: "Property category: home, office, or shop",
+        },
+        area: {
+          type: "string",
+          enum: [
+            "Gulshan",
+            "Banani",
+            "Dhanmondi",
+            "Mirpur",
+            "Uttara",
+            "Motijheel",
+          ],
+          description: "Dhaka neighborhood",
+        },
+        monthlyRentBdt: {
+          type: "number",
+          description: "Agreed monthly rent in BDT (৳)",
+        },
+        advanceMonths: {
+          type: "number",
+          description: "Number of months of security advance deposit (default: 2)",
+        },
+        leaseDurationMonths: {
+          type: "number",
+          description: "Lease term duration in months (default: 12)",
+        },
+        tenantType: {
+          type: "string",
+          enum: ["family", "bachelor", "corporate", "retail"],
+          description: "Optional tenant profile",
+        },
+        landlordName: {
+          type: "string",
+          description: "Optional landlord full name",
+        },
+        tenantName: {
+          type: "string",
+          description: "Optional tenant full name",
+        },
+      },
+      required: ["category", "area", "monthlyRentBdt"],
+    },
+  },
+  {
+    name: "dhaka_calculate_holding_tax",
+    description:
+      "Calculate estimated annual Dhaka City Corporation (DNCC / DSCC) holding tax based on monthly rental value and property category.",
+    inputSchema: {
+      type: "object",
+      properties: {
+        cityCorporation: {
+          type: "string",
+          enum: ["DNCC", "DSCC"],
+          description: "Dhaka North (DNCC) or Dhaka South (DSCC)",
+        },
+        monthlyRentBdt: {
+          type: "number",
+          description: "Monthly rent in BDT (৳)",
+        },
+        category: {
+          type: "string",
+          enum: ["home", "office", "shop"],
+          description: "Property category",
+        },
+        ownerOccupied: {
+          type: "boolean",
+          description:
+            "Whether the owner occupies the property (applies municipal rebate if true)",
+        },
+      },
+      required: ["cityCorporation", "monthlyRentBdt", "category"],
     },
   },
 ];
@@ -369,6 +479,102 @@ server.setRequestHandler(CallToolRequestSchema, async (request) => {
 
         return {
           content: [{ type: "text", text: report }],
+        };
+      }
+
+      case "dhaka_generate_tenancy_deed": {
+        const validated = TenancyDeedSchema.parse(args);
+        const totalAdvanceBdt =
+          validated.monthlyRentBdt * validated.advanceMonths;
+        const landlord = validated.landlordName || "[Landlord Full Name]";
+        const tenant = validated.tenantName || "[Tenant Full Name & NID]";
+        const isCommercial =
+          validated.category === "office" || validated.category === "shop";
+
+        const clauses: string[] = [
+          `1. **Parties & Premises**: Agreement between **${landlord}** (First Party / Landlord) and **${tenant}** (Second Party / Tenant) for a ${validated.category.toUpperCase()} unit located in **${validated.area}, Dhaka**.`,
+          `2. **Stamp Duty & Legal Framework**: Executed on a **৳ 300 Non-Judicial Stamp** under the *Bangladesh Premises Rent Control Act, 1991* and *Transfer of Property Act, 1882*.`,
+          `3. **Monthly Rent & Payment Schedule**: Monthly rent is fixed at **৳ ${validated.monthlyRentBdt.toLocaleString()}** payable on or before the 10th of each English calendar month via bank transfer or digital banking.`,
+          `4. **Security Advance Deposit**: The Tenant has deposited **৳ ${totalAdvanceBdt.toLocaleString()}** (${validated.advanceMonths} months' rent) as an interest-free security deposit, refundable upon handover of vacant possession minus any verified utility arrears or structural damages.`,
+          `5. **Lease Term & Notice Period**: Valid for **${validated.leaseDurationMonths} months**. Either party must serve a mandatory **2-month (60 days) written notice** prior to termination or vacating the premises.`,
+          `6. **Utilities & Service Charges**: Tenant shall bear actual monthly electricity (DESCO/DPDC), water (WASA), gas (Titas), and building service charges separately unless explicitly bundled.`,
+          `7. **No Subletting & Alteration**: The Tenant shall not sublet, assign, or make structural alterations without prior written consent from the Landlord.`,
+        ];
+
+        if (isCommercial) {
+          clauses.push(
+            `8. **Commercial Tax, VAT & Trade License**: Applicable VAT and TDS (Tax Deducted at Source) on commercial rent shall be compliant with NBR (National Board of Revenue) rules. Landlord shall provide necessary holding number and NOC for DNCC/DSCC Trade License registration.`
+          );
+        } else if (validated.tenantType === "bachelor") {
+          clauses.push(
+            `8. **DMP Tenant Registration**: All adult occupants must submit NID copies and complete the mandatory Dhaka Metropolitan Police (DMP) Citizen Information Management System (CIMS) tenant form prior to move-in.`
+          );
+        } else {
+          clauses.push(
+            `8. **DMP Registration & Society Rules**: Tenant must complete DMP CIMS tenant registration and abide by the building's residential welfare society rules.`
+          );
+        }
+
+        const deedText = [
+          `### Dhaka Tenancy Agreement Summary (${validated.category.toUpperCase()} — ${validated.area})`,
+          ``,
+          `**Monthly Rent**: ৳ ${validated.monthlyRentBdt.toLocaleString()} | **Advance**: ৳ ${totalAdvanceBdt.toLocaleString()} (${validated.advanceMonths} mo) | **Term**: ${validated.leaseDurationMonths} months`,
+          ``,
+          `#### Standard Legal Clauses:`,
+          ...clauses,
+          ``,
+          `*Disclaimer: This is a standardized template for convenience and does not constitute formal legal representation. Verify final execution on a ৳ 300 Non-Judicial Stamp with witnesses.*`,
+        ].join("\n");
+
+        return {
+          content: [{ type: "text", text: deedText }],
+        };
+      }
+
+      case "dhaka_calculate_holding_tax": {
+        const validated = HoldingTaxSchema.parse(args);
+        const grossAnnualRent = validated.monthlyRentBdt * 12;
+        const maintenanceDeduction = validated.monthlyRentBdt * 2; // 2 months standard statutory maintenance deduction
+        const baseAnnualValuation = grossAnnualRent - maintenanceDeduction;
+        const rebateMultiplier = validated.ownerOccupied ? 0.6 : 1.0; // 40% rebate if owner-occupied
+        const taxableValuation = Math.round(
+          baseAnnualValuation * rebateMultiplier
+        );
+
+        // Dhaka City Corporation standard municipal tax rate (~12%: 7% holding + 3% conservancy + 2% lighting)
+        const municipalTaxRate = 0.12;
+        const estimatedAnnualTax = Math.round(
+          taxableValuation * municipalTaxRate
+        );
+        const quarterlyInstallment = Math.round(estimatedAnnualTax / 4);
+
+        const corpName =
+          validated.cityCorporation === "DNCC"
+            ? "Dhaka North City Corporation (DNCC)"
+            : "Dhaka South City Corporation (DSCC)";
+
+        const summary = [
+          `### ${corpName} — Holding Tax Estimation`,
+          ``,
+          `- **Property Category**: ${validated.category.toUpperCase()}`,
+          `- **Occupancy**: ${
+            validated.ownerOccupied
+              ? "Owner-Occupied (40% Municipal Rebate Applied)"
+              : "Rented / Commercial"
+          }`,
+          `- **Monthly Rent**: ৳ ${validated.monthlyRentBdt.toLocaleString()}`,
+          `- **Gross Annual Rental Value (12 mo)**: ৳ ${grossAnnualRent.toLocaleString()}`,
+          `- **Less Statutory Maintenance Allowance (2 mo)**: -৳ ${maintenanceDeduction.toLocaleString()}`,
+          `- **Net Assessed Annual Valuation**: ৳ ${taxableValuation.toLocaleString()}`,
+          `- **Combined Municipal Rate**: 12% (7% Holding + 3% Conservancy + 2% Street Lighting)`,
+          `- **Estimated Annual Holding Tax**: **৳ ${estimatedAnnualTax.toLocaleString()}**`,
+          `- **Estimated Quarterly Installment**: **৳ ${quarterlyInstallment.toLocaleString()}**`,
+          ``,
+          `*Disclaimer: Educational estimate based on standard Dhaka City Corporation municipal assessment guidelines.*`,
+        ].join("\n");
+
+        return {
+          content: [{ type: "text", text: summary }],
         };
       }
 

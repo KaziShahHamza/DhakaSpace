@@ -48,11 +48,18 @@ Before committing, invoke the `code-reviewer` subagent:
 - Check its findings for security vulnerabilities, MERN bugs, or deprecated Gemini models.
 - If changes are requested, fix them and re-run the check.
 
-### Step 5: Conventional Commit & GitHub Synchronization
+### Step 5: Conventional Commit, Push & GitHub MCP Pull Request
 Once approved by `code-reviewer`:
 ```bash
 git add <files>
 git commit -m "feat(scope): concise description"
 git push -u origin <branch-name>
 ```
-When opening a pull request on GitHub, fill out `.github/pull_request_template.md`.
+**Do NOT merge locally into `main`.** Instead, use the **GitHub MCP** server:
+1. Call `create_pull_request` (`base: "main"`, `head: "<branch-name>"`) filling out `.github/pull_request_template.md`.
+2. Call `merge_pull_request` on the newly created PR number to merge into `main` on GitHub.
+3. Sync local `main` before starting the next phase:
+```bash
+git checkout main
+git pull origin main
+```

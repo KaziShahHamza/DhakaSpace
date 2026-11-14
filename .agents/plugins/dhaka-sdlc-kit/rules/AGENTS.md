@@ -1,9 +1,10 @@
 # DhakaSpace Plugin SDLC & Quality Rules
 
 1. **Git & GitHub Discipline**:
-   - Never commit directly to `main` without checking out a feature branch (`feat/*` or `fix/*`).
+   - Never commit directly to `main`; always create a dedicated feature branch per phase (`feat/phase-<N>-<name>` or `feat/*` / `fix/*`) from up-to-date `main`.
    - Every commit must follow Conventional Commits format (`feat(scope): message`, `fix(scope): message`, `chore(scope): message`).
    - Pull request templates in `.github/pull_request_template.md` must be respected.
+   - Never merge locally into `main`. Always open a Pull Request and merge it into `main` using the **GitHub MCP** (`create_pull_request` -> `merge_pull_request`), then sync local `main`.
 
 2. **Secrets & Environment Variables**:
    - `server/.env`, `client/.env`, or any file containing `GEMINI_API_KEY` or `MONGODB_URI` must never be tracked in git.
