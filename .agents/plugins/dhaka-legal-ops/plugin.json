@@ -1,0 +1,11 @@
+{
+  "name": "dhaka-legal-ops",
+  "displayName": "DhakaSpace Legal, Marketing & Ops Suite",
+  "version": "0.1.0",
+  "description": "Domain plugin for Dhaka tenancy law compliance, bilingual real-estate SEO copywriting, and autonomous legal/marketing/ops subagents.",
+  "suggestedPrompts": [
+    "Generate a Bangladesh Premises Rent Control Act compliant tenancy deed for a 3-bed flat in Dhanmondi",
+    "Create Facebook, Bikroy, and Bangla ad copy variants for a 1500 sqft office in Banani",
+    "Run a multi-MCP platform audit across MongoDB and Dhaka rental benchmarks"
+  ]
+}

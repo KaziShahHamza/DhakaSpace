@@ -6,6 +6,29 @@
       "env": {
         "MONGODB_URI": "mongodb://127.0.0.1:27017/dhakaspace"
       }
+    },
+    "mongodb-mcp": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mongodb-mcp-server",
+        "--connectionString",
+        "mongodb://127.0.0.1:27017/dhakaspace"
+      ]
+    },
+    "github-mcp": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-github"],
+      "env": {
+        "GITHUB_PERSONAL_ACCESS_TOKEN": "${GITHUB_PERSONAL_ACCESS_TOKEN}"
+      }
+    },
+    "vercel-mcp": {
+      "command": "npx",
+      "args": ["-y", "vercel-mcp"],
+      "env": {
+        "VERCEL_API_TOKEN": "${VERCEL_API_TOKEN}"
+      }
     }
   }
 }

@@ -70,6 +70,36 @@ async function runTest() {
   });
   printToolResult(auditResult.content);
 
+  // 5. Test dhaka_generate_tenancy_deed
+  console.log("\n--- Testing Tool: dhaka_generate_tenancy_deed (Dhanmondi Home) ---");
+  const deedResult = await client.callTool({
+    name: "dhaka_generate_tenancy_deed",
+    arguments: {
+      category: "home",
+      area: "Dhanmondi",
+      monthlyRentBdt: 45000,
+      advanceMonths: 3,
+      leaseDurationMonths: 24,
+      tenantType: "family",
+      landlordName: "Tariq Rahman",
+      tenantName: "Nusrat Jahan",
+    },
+  });
+  printToolResult(deedResult.content);
+
+  // 6. Test dhaka_calculate_holding_tax
+  console.log("\n--- Testing Tool: dhaka_calculate_holding_tax (DNCC Commercial) ---");
+  const taxResult = await client.callTool({
+    name: "dhaka_calculate_holding_tax",
+    arguments: {
+      cityCorporation: "DNCC",
+      monthlyRentBdt: 140000,
+      category: "office",
+      ownerOccupied: false,
+    },
+  });
+  printToolResult(taxResult.content);
+
   console.log("\n✅ All Dhaka MCP Server tools verified successfully!");
   await client.close();
   process.exit(0);

@@ -35,9 +35,10 @@ Welcome to **DhakaSpace**, a rental platform designed for Dhaka City (Homes, Off
 
 ## 3. Mandatory Agentic SDLC & Code Quality Gate
 
-Before committing code or merging any feature branch into `main`:
-1. **Branching**: Develop each feature on its own branch (`feat/<feature-name>`).
+Before completing any phase or merging any feature branch into `main`:
+1. **Per-Phase Branching**: Develop each phase or feature on its own branch created from up-to-date `main` (`feat/phase-<N>-<name>` or `feat/<feature-name>`).
 2. **Pre-commit Automated Check**: Run `./.agents/plugins/dhaka-sdlc-kit/skills/git-github-sdlc/scripts/sdlc-check.sh` to confirm no secrets (`.env`) are staged and syntax/build tests pass.
-3. **Subagent Code Review**: Invoke the `code-reviewer` subagent on the staged `git diff`. Fix any reported critical security issues or regressions before committing.
-4. **Conventional Commits**: Format commit messages as `feat: ...`, `fix: ...`, `docs: ...`, `chore: ...`, or `test: ...`.
-5. **No Deprecated Gemini Models**: Always use current `@google/genai` models (`gemini-3.8-flash`, `gemini-4-carbon`, `gemini-4-argon`). Never use deprecated `gemini-1.5-*`, `gemini-2.0-*`, or `gemini-2.5-*` models.
+3. **Subagent Code Review**: Stage changes and invoke the `code-reviewer` subagent on the staged `git diff --cached`. Fix any reported critical security issues or regressions before committing.
+4. **Conventional Commits & Push**: Format commit messages as `feat(scope): ...`, `fix(scope): ...`, `docs(scope): ...`, `chore(scope): ...`, or `test(scope): ...` and push the branch to `origin`.
+5. **Pull Request & Merge via GitHub MCP (No Local `git merge` into `main`)**: Never merge locally into `main`. Always use the **GitHub MCP** (`create_pull_request`) to open a PR against `main` using `.github/pull_request_template.md`, and merge it via **GitHub MCP** (`merge_pull_request`). Afterward, `git checkout main && git pull origin main` before starting the next phase.
+6. **No Deprecated Gemini Models**: Always use current `@google/genai` models (`gemini-3.8-flash`, `gemini-4-carbon`, `gemini-4-argon`). Never use deprecated `gemini-1.5-*`, `gemini-2.0-*`, or `gemini-2.5-*` models.
