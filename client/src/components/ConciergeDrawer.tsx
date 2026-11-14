@@ -11,6 +11,7 @@ interface ChatMessage {
   sender: "user" | "concierge";
   text: string;
   timestamp: string;
+  toolCalls?: string[];
 }
 
 export const ConciergeDrawer: React.FC<ConciergeDrawerProps> = ({
@@ -64,6 +65,7 @@ export const ConciergeDrawer: React.FC<ConciergeDrawerProps> = ({
         sender: "concierge",
         text: replyText,
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+        toolCalls: data.toolCallsExecuted,
       };
 
       setMessages((prev) => [...prev, botMsg]);
@@ -126,6 +128,18 @@ export const ConciergeDrawer: React.FC<ConciergeDrawerProps> = ({
                 }`}
               >
                 <p className="leading-relaxed whitespace-pre-wrap">{msg.text}</p>
+                {msg.toolCalls && msg.toolCalls.length > 0 && (
+                  <div className="flex flex-wrap gap-1 mt-1.5 pt-1.5 border-t border-gray-100">
+                    {msg.toolCalls.map((t, idx) => (
+                      <span
+                        key={idx}
+                        className="inline-flex items-center text-[10px] bg-emerald-50 text-emerald-700 px-1.5 py-0.5 rounded font-mono border border-emerald-200/60"
+                      >
+                        ⚡ Tool: {t}
+                      </span>
+                    ))}
+                  </div>
+                )}
                 <span
                   className={`block text-[10px] mt-1 text-right ${
                     msg.sender === "user" ? "text-green-100" : "text-gray-400"

@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import { listingsRouter } from "./routes/listings";
 import { inquiriesRouter } from "./routes/inquiries";
+import { aiRouter } from "./routes/ai";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.get("/health", (_req: Request, res: Response) => {
 // Routes
 app.use("/api/listings", listingsRouter);
 app.use("/api/inquiries", inquiriesRouter);
+app.use("/api/ai", aiRouter);
 
 // Centralized Error Handling Middleware
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
