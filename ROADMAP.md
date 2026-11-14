@@ -10,8 +10,8 @@ This document is the single source of truth for the project lifecycle, architect
 | :--- | :--- | :--- | :--- |
 | **Phase 1** | **Agentic SDLC & Workspace Tooling** | Git, GitHub Actions, Rules, Skills, Plugins, Subagents | ✅ **Completed** |
 | **Phase 2** | **MERN Core Rental Platform** | Node.js, Express, MongoDB/Mongoose, React, Vite, Tailwind | ✅ **Completed** |
-| **Phase 3** | **Custom Dhaka Rental MCP Server** | Model Context Protocol (`@modelcontextprotocol/sdk`), Stdio | ⏳ **In Progress (Next)** |
-| **Phase 4** | **Google GenAI SDK & ADK Concierge** | `@google/genai` (Structured Outputs), `@google/adk` (Agent) | 🔮 Upcoming |
+| **Phase 3** | **Custom Dhaka Rental MCP Server** | Model Context Protocol (`@modelcontextprotocol/sdk`), Stdio | ✅ **Completed** |
+| **Phase 4** | **Google GenAI SDK & ADK Concierge** | `@google/genai` (Structured Outputs), `@google/adk` (Agent) | ⏳ **In Progress (Next)** |
 | **Phase 5** | **Live In-Browser Verification** | Chrome DevTools MCP (`chrome-devtools`) | 🔮 Upcoming |
 
 ---
@@ -39,16 +39,17 @@ This document is the single source of truth for the project lifecycle, architect
   - Landlord listing creation modal with "✨ AI Autofill" entry point.
   - Slide-out AI Concierge drawer.
 
-### ⏳ Phase 3: Custom Dhaka Rental MCP Server (`mcp-server/`)
-- Create standalone Stdio MCP server under `mcp-server/`.
-- Expose 3 custom tools for AI models:
+### ✅ Phase 3: Custom Dhaka Rental MCP Server (`mcp-server/`)
+- Created standalone Stdio MCP server under `mcp-server/` with `@modelcontextprotocol/sdk`.
+- Implemented 3 custom tools with Zod input sanitization:
   1. `dhaka_search_listings`: Query MongoDB listings by category, area, and max rent.
   2. `dhaka_area_rent_summary`: Compute min/max/avg BDT rent and BDT/sqft by neighborhood.
   3. `dhaka_audit_listing_prices`: Audit listings against typical Dhaka market rates to detect anomalies.
-- Register server into `.agents/plugins/dhaka-sdlc-kit/mcp_config.json`.
-- Run SDLC check + `code-reviewer` subagent audit and commit.
+- Plugin integration: Registered server in `.agents/plugins/dhaka-sdlc-kit/mcp_config.json`.
+- Tested end-to-end via `mcp-server/src/test-client.ts` over Stdio transport.
+- Code reviewed and approved by `code-reviewer` subagent.
 
-### 🔮 Phase 4: Google GenAI SDK & Google ADK Integration
+### ⏳ Phase 4: Google GenAI SDK & Google ADK Integration
 - **`@google/genai` Smart Autofill**: `POST /api/ai/autofill` using `gemini-3.8-flash` with JSON Schema structured output to turn landlord notes into listing fields.
 - **`@google/adk` AI Concierge**: `POST /api/ai/chat` running an ADK Agent with tool-calling capabilities against Dhaka listings and area stats.
 - Wire frontend Concierge Drawer and Post Listing form to backend AI endpoints.
