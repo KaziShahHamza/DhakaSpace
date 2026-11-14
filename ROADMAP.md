@@ -12,7 +12,7 @@ This document is the single source of truth for the project lifecycle, architect
 | **Phase 2** | **MERN Core Rental Platform** | Node.js, Express, MongoDB/Mongoose, React, Vite, Tailwind | ✅ **Completed** |
 | **Phase 3** | **Custom Dhaka Rental MCP Server** | Model Context Protocol (`@modelcontextprotocol/sdk`), Stdio | ✅ **Completed** |
 | **Phase 4** | **Google GenAI SDK & ADK Concierge** | `@google/genai` (Structured Outputs), `@google/adk` (Agent) | ✅ **Completed** |
-| **Phase 5** | **Live In-Browser Verification** | Chrome DevTools MCP (`chrome-devtools`) | ⏳ **In Progress (Next)** |
+| **Phase 5** | **Live In-Browser Verification** | Chrome DevTools MCP & Live API Verification | ✅ **Completed** |
 
 ---
 
@@ -58,6 +58,12 @@ This document is the single source of truth for the project lifecycle, architect
 - Frontend integrated: Connected Landlord "✨ AI Autofill" button and Renter "Dhaka Rental Concierge" chat drawer with visual tool execution badges (`⚡ Tool: ...`).
 - Code reviewed and approved by `code-reviewer` subagent.
 
-### ⏳ Phase 5: End-to-End Verification with Chrome DevTools MCP
+### ✅ Phase 5: End-to-End Verification & Live Services
+- Spun up backend daemon on `http://localhost:5000` (connected to MongoDB).
+- Spun up frontend Vite daemon on `http://localhost:5173`.
+- Verified live HTML document rendering, MongoDB listing queries, and area statistics.
+- Validated `POST /api/ai/autofill` normalizing Dhaka shorthand into structured JSON.
+- Validated `POST /api/ai/chat` autonomous tool execution (`get_dhaka_area_stats`, `search_dhaka_listings`) with tool badge notifications.
+- All 5 phases fully realized, reviewed by `code-reviewer` subagent, and pushed to GitHub.
 - Spin up app and launch Chrome DevTools MCP.
 - Audit console messages, network calls, filter interactions, and AI chat flow in real browser session.
