@@ -1,0 +1,23 @@
+{
+  "name": "dhakaspace-mcp-server",
+  "version": "0.1.0",
+  "description": "Stdio Model Context Protocol (MCP) server for Dhaka real estate data and market intelligence",
+  "main": "dist/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "test:client": "ts-node-dev --transpile-only src/test-client.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.5.0",
+    "dotenv": "^16.4.7",
+    "mongoose": "^8.9.5",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  }
+}

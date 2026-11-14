@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "dhaka-rental-mcp": {
+      "command": "node",
+      "args": ["mcp-server/dist/index.js"],
+      "env": {
+        "MONGODB_URI": "mongodb://127.0.0.1:27017/dhakaspace"
+      }
+    }
+  }
+}
