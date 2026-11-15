@@ -15,7 +15,7 @@ This document is the single source of truth for the project lifecycle, architect
 | **Phase 5** | **Live In-Browser Verification** | Chrome DevTools MCP & Live API Verification | ✅ **Completed** |
 | **Phase 6** | **Builtin & Multi-MCP Architecture** | MongoDB MCP (`mongodb-mcp-server`), GitHub MCP, Stdio MCP | ✅ **Completed** |
 | **Phase 7** | **Multi-Plugin Architecture & Specialized Skills** | Multiple Plugins (`dhaka-legal-ops`), Legal & Copywriting Skills | ✅ **Completed** |
-| **Phase 8** | **Autonomous Subagents Suite** | `legal-lease-agent`, `listing-copywriter`, `platform-auditor` | 📋 **Planned** |
+| **Phase 8** | **Autonomous Subagents Suite** | `legal-lease-agent`, `listing-copywriter`, `platform-auditor` | ✅ **Completed** |
 | **Phase 9** | **Real-Life Application Features** | Legal Tenancy Deed Generator, AI Social Ad Booster, MCP Console | 📋 **Planned** |
 | **Phase 10** | **End-to-End Verification & SDLC Gate** | SDLC Check, `code-reviewer` Subagent, Git Push | 📋 **Planned** |
 
@@ -93,11 +93,11 @@ This document is the single source of truth for the project lifecycle, architect
   - `dhaka-seo-copywriting` (`.agents/plugins/dhaka-legal-ops/skills/dhaka-seo-copywriting/SKILL.md`): High-converting bilingual (English & Bangla) copy frameworks for Facebook rental groups, Bikroy, and WhatsApp broadcasts.
   - `multi-mcp-orchestration` (`.agents/plugins/dhaka-sdlc-kit/skills/multi-mcp-orchestration/SKILL.md`): Runbook for chaining MongoDB MCP, custom Dhaka MCP, and GitHub MCP in complex compound agent tasks.
 
-### 📋 Phase 8: Autonomous Subagents Suite
-- **`legal-lease-agent`**: Real estate attorney persona generating compliant tenancy deeds with customizable advance deposit, notice period, and maintenance clauses.
-- **`listing-copywriter`**: Real estate marketer persona producing multi-channel bilingual ad copy (Facebook, Bikroy, WhatsApp) with Dhaka neighborhood selling points.
-- **`platform-auditor`**: DevOps & DB reliability engineer persona using MongoDB MCP and GitHub MCP to check query performance, index coverage, and issue logs.
-- Register subagents with `define_subagent` and persist in plugin agent folders.
+### ✅ Phase 8: Autonomous Subagents Suite
+- **`legal-lease-agent`** (`.agents/plugins/dhaka-legal-ops/agents/legal-lease-agent.md`): Real estate attorney persona generating Bangladesh Premises Rent Control Act (1991) compliant tenancy deeds with customizable advance deposit, notice period, DMP CIMS / commercial VAT/TDS, and maintenance clauses.
+- **`listing-copywriter`** (`.agents/plugins/dhaka-legal-ops/agents/listing-copywriter.md`): Real estate marketer persona producing multi-channel bilingual ad copy (Facebook, Bikroy, WhatsApp/Bangla) with Dhaka neighborhood selling points and zero spec fabrication.
+- **`platform-auditor`** (`.agents/plugins/dhaka-sdlc-kit/agents/platform-auditor.md`): DevOps & DB reliability engineer persona using MongoDB MCP, Dhaka Rental MCP, and GitHub MCP to check query performance, index coverage, price anomalies, and issue logs.
+- Registered all three subagents with `define_subagent` and persisted them in plugin `agents/` folders.
 
 ### 📋 Phase 9: Real-Life Application Features
 - **Backend Endpoints (`server/src/routes/ai.ts` & `server/src/routes/mcp.ts`)**:
