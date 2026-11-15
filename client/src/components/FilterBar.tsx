@@ -42,7 +42,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           onClick={() => setCategory("all")}
           className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition ${
             category === "all"
-              ? "bg-green-600 text-white shadow-sm"
+              ? "bg-green-700 text-white shadow-sm"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
@@ -52,7 +52,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           onClick={() => setCategory("home")}
           className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition ${
             category === "home"
-              ? "bg-green-600 text-white shadow-sm"
+              ? "bg-green-700 text-white shadow-sm"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
@@ -63,7 +63,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           onClick={() => setCategory("office")}
           className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition ${
             category === "office"
-              ? "bg-green-600 text-white shadow-sm"
+              ? "bg-green-700 text-white shadow-sm"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
@@ -74,7 +74,7 @@ export const FilterBar: React.FC<FilterBarProps> = ({
           onClick={() => setCategory("shop")}
           className={`flex items-center space-x-2 px-4 py-2 rounded-xl text-sm font-medium transition ${
             category === "shop"
-              ? "bg-green-600 text-white shadow-sm"
+              ? "bg-green-700 text-white shadow-sm"
               : "bg-gray-100 text-gray-700 hover:bg-gray-200"
           }`}
         >
@@ -89,7 +89,9 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <div className="md:col-span-5 relative">
           <Search className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
           <input
+            id="filter-search"
             type="text"
+            aria-label="Search listings by keywords, roads, or amenities"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder="Search by keywords, roads, amenities..."
@@ -101,6 +103,8 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         <div className="md:col-span-4 relative">
           <MapPin className="w-4 h-4 text-gray-400 absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <select
+            id="filter-area"
+            aria-label="Filter by Dhaka neighborhood"
             value={area}
             onChange={(e) => setArea(e.target.value)}
             className="w-full pl-10 pr-8 py-2.5 rounded-xl border border-gray-300 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 appearance-none"
@@ -117,19 +121,21 @@ export const FilterBar: React.FC<FilterBarProps> = ({
         {/* Max Rent Slider */}
         <div className="md:col-span-3 bg-gray-50 p-2.5 rounded-xl border border-gray-200">
           <div className="flex justify-between items-center text-xs font-medium text-gray-700 mb-1">
-            <span>Max Budget:</span>
+            <label htmlFor="filter-max-rent">Max Budget:</label>
             <span className="font-bold text-green-700">
               {maxRent >= 300000 ? "Any Budget" : `৳ ${maxRent.toLocaleString()}`}
             </span>
           </div>
           <input
+            id="filter-max-rent"
             type="range"
+            aria-label="Maximum monthly rent budget in BDT"
             min={15000}
             max={300000}
             step={5000}
             value={maxRent}
             onChange={(e) => setMaxRent(Number(e.target.value))}
-            className="w-full accent-green-600 h-1.5 bg-gray-200 rounded-lg cursor-pointer"
+            className="w-full accent-green-700 h-1.5 bg-gray-200 rounded-lg cursor-pointer"
           />
         </div>
       </div>

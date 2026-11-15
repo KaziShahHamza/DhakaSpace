@@ -57,19 +57,19 @@ export const ListingCard: React.FC<ListingCardProps> = ({
             {getCategoryIcon()}
             <span className="capitalize">{listing.category}</span>
           </span>
-          <span className="inline-flex items-center space-x-1 text-xs font-medium text-gray-500 bg-gray-100 px-2.5 py-1 rounded-lg">
-            <MapPin className="w-3.5 h-3.5 text-gray-400" />
+          <span className="inline-flex items-center space-x-1 text-xs font-medium text-gray-700 bg-gray-100 px-2.5 py-1 rounded-lg">
+            <MapPin className="w-3.5 h-3.5 text-gray-500" />
             <span>{listing.area}</span>
           </span>
         </div>
 
         {/* Title */}
-        <h3
+        <h2
           onClick={() => onSelect(listing)}
-          className="text-base font-bold text-gray-900 group-hover:text-green-600 cursor-pointer transition line-clamp-2 mb-2"
+          className="text-base font-bold text-gray-900 group-hover:text-green-700 cursor-pointer transition line-clamp-2 mb-2"
         >
           {listing.title}
-        </h3>
+        </h2>
 
         {/* Address */}
         <p className="text-xs text-gray-500 mb-4 line-clamp-1">
@@ -139,7 +139,7 @@ export const ListingCard: React.FC<ListingCardProps> = ({
         </button>
         <button
           onClick={() => onRequestVisit(listing)}
-          className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 rounded-lg shadow-sm transition"
+          className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-700 hover:bg-green-800 rounded-lg shadow-sm transition"
         >
           <Calendar className="w-3.5 h-3.5" />
           <span>Request Visit</span>
