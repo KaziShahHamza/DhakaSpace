@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Calendar, CheckCircle2 } from "lucide-react";
 import { Listing } from "../types";
+import { apiUrl } from "../lib/api";
 
 interface InquiryModalProps {
   listing: Listing | null;
@@ -28,7 +29,7 @@ export const InquiryModal: React.FC<InquiryModalProps> = ({
     setError(null);
 
     try {
-      const response = await fetch("/api/inquiries", {
+      const response = await fetch(apiUrl("/api/inquiries"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

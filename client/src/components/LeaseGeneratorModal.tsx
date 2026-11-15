@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, FileText, Copy, Check, Printer, RefreshCw, ShieldCheck } from "lucide-react";
 import { Listing } from "../types";
+import { apiUrl } from "../lib/api";
 
 interface LeaseClause {
   heading: string;
@@ -55,7 +56,7 @@ export const LeaseGeneratorModal: React.FC<LeaseGeneratorModalProps> = ({
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/ai/generate-lease", {
+      const res = await fetch(apiUrl("/api/ai/generate-lease"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

@@ -10,6 +10,7 @@ import { LeaseGeneratorModal } from "./components/LeaseGeneratorModal";
 import { AdCopyModal } from "./components/AdCopyModal";
 import { McpConsoleDrawer } from "./components/McpConsoleDrawer";
 import { Listing, AreaStat } from "./types";
+import { apiUrl } from "./lib/api";
 import { Building2, Sparkles, TrendingUp, AlertCircle, RefreshCw } from "lucide-react";
 
 export const App: React.FC = () => {
@@ -44,7 +45,7 @@ export const App: React.FC = () => {
       if (maxRent < 300000) params.append("maxRent", maxRent.toString());
       if (searchQuery.trim()) params.append("q", searchQuery.trim());
 
-      const res = await fetch(`/api/listings?${params.toString()}`);
+      const res = await fetch(apiUrl(`/api/listings?${params.toString()}`));
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to load listings");
       setListings(data.data || []);
@@ -57,7 +58,7 @@ export const App: React.FC = () => {
 
   const fetchStats = async () => {
     try {
-      const res = await fetch("/api/listings/stats");
+      const res = await fetch(apiUrl("/api/listings/stats"));
       const data = await res.json();
       if (res.ok && data.data) {
         setStats(data.data);

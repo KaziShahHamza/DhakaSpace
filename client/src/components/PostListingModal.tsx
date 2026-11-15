@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { X, Sparkles, CheckCircle2 } from "lucide-react";
 import { ListingCategory, DhakaArea } from "../types";
+import { apiUrl } from "../lib/api";
 
 interface PostListingModalProps {
   isOpen: boolean;
@@ -53,7 +54,7 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
     setAiError(null);
 
     try {
-      const response = await fetch("/api/ai/autofill", {
+      const response = await fetch(apiUrl("/api/ai/autofill"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ notes: aiNotes }),
@@ -116,7 +117,7 @@ export const PostListingModal: React.FC<PostListingModalProps> = ({
         contactPhone,
       };
 
-      const res = await fetch("/api/listings", {
+      const res = await fetch(apiUrl("/api/listings"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
