@@ -111,6 +111,6 @@ This document is the single source of truth for the project lifecycle, architect
 
 ### ✅ Phase 10: End-to-End Verification & SDLC Gate
 - Ran `sdlc-check.sh` and TypeScript/Vite compile checks (`server/`, `client/`, and `mcp-server/`).
-- Verified live backend (`http://localhost:5000`) connected to MongoDB (`16` listings) and live frontend (`http://localhost:5173`), including `GET /health`, `GET /api/listings`, `GET /api/mcp/status`, `POST /api/ai/generate-lease`, and `POST /api/ai/generate-ad-copy`. *(Note: Chrome DevTools MCP browser launch could not run on this host because `/opt/google/chrome/chrome` is not installed.)*
+- Verified live backend (`http://localhost:5000`) connected to MongoDB (`16` listings) and live frontend (`http://localhost:5173`) in **Chrome DevTools MCP** (`google-chrome-stable` 157.0.8103.78): zero console errors, all API/Vite requests `200`/`304`, category filtering (`Commercial Office` -> 5 listings), `LeaseGeneratorModal` (deed generation with `৳ 300 Non-Judicial Stamp`, `NBR VAT & TDS`, `DNCC`), `AdCopyModal` (Facebook, Bikroy SEO, Bangla/WhatsApp), and `McpConsoleDrawer` (`4` servers, `10` tools).
 - Ran `code-reviewer` subagent on the staged `git diff`.
 - Merged branch via GitHub MCP PR and synced local `main`.

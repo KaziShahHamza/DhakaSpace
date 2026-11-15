@@ -192,13 +192,13 @@ export const App: React.FC = () => {
       />
 
       <LeaseGeneratorModal
-        key={leaseListing?._id ?? "none"}
+        key={leaseListing?._id ?? "lease-none"}
         listing={leaseListing}
         onClose={() => setLeaseListing(null)}
       />
 
       <AdCopyModal
-        key={adCopyListing?._id ?? "none"}
+        key={adCopyListing?._id ?? "adcopy-none"}
         listing={adCopyListing}
         onClose={() => setAdCopyListing(null)}
       />
