@@ -14,7 +14,18 @@ const PORT = process.env.PORT || 5000;
 const MONGODB_URI =
   process.env.MONGODB_URI || "mongodb://127.0.0.1:27017/dhakaspace";
 
-app.use(cors());
+const allowedOrigins = (process.env.CORS_ORIGIN || "")
+  .split(",")
+  .map((s) => s.trim())
+  .filter(Boolean);
+
+app.use(
+  cors(
+    allowedOrigins.length > 0
+      ? { origin: [...allowedOrigins, "http://localhost:5173"] }
+      : undefined
+  )
+);
 app.use(express.json());
 
 // Health Check

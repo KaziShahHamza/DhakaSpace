@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { X, Terminal, Server, Wrench, RefreshCw } from "lucide-react";
+import { apiUrl } from "../lib/api";
 
 interface McpToolInfo {
   name: string;
@@ -39,7 +40,7 @@ export const McpConsoleDrawer: React.FC<McpConsoleDrawerProps> = ({
     setIsLoading(true);
     setError(null);
     try {
-      const res = await fetch("/api/mcp/status");
+      const res = await fetch(apiUrl("/api/mcp/status"));
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to load MCP status");
       setStatusData(data.data);

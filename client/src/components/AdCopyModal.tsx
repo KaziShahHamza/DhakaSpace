@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { X, Megaphone, Copy, Check, RefreshCw } from "lucide-react";
 import { Listing } from "../types";
+import { apiUrl } from "../lib/api";
 
 interface GeneratedAdCopy {
   facebookPost: string;
@@ -35,7 +36,7 @@ export const AdCopyModal: React.FC<AdCopyModalProps> = ({
       setIsLoading(true);
       setError(null);
       try {
-        const res = await fetch("/api/ai/generate-ad-copy", {
+        const res = await fetch(apiUrl("/api/ai/generate-ad-copy"), {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           signal: controller.signal,

@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { X, Sparkles, Send, Bot, User } from "lucide-react";
+import { apiUrl } from "../lib/api";
 
 interface ConciergeDrawerProps {
   isOpen: boolean;
@@ -49,7 +50,7 @@ export const ConciergeDrawer: React.FC<ConciergeDrawerProps> = ({
     setIsLoading(true);
 
     try {
-      const response = await fetch("/api/ai/chat", {
+      const response = await fetch(apiUrl("/api/ai/chat"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ message: userText }),
