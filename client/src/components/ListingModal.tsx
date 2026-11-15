@@ -6,6 +6,8 @@ import {
   User,
   CheckCircle2,
   Calendar,
+  FileText,
+  Megaphone,
 } from "lucide-react";
 import { Listing } from "../types";
 
@@ -13,12 +15,16 @@ interface ListingModalProps {
   listing: Listing | null;
   onClose: () => void;
   onRequestVisit: (listing: Listing) => void;
+  onGenerateLease: (listing: Listing) => void;
+  onGenerateAdCopy: (listing: Listing) => void;
 }
 
 export const ListingModal: React.FC<ListingModalProps> = ({
   listing,
   onClose,
   onRequestVisit,
+  onGenerateLease,
+  onGenerateAdCopy,
 }) => {
   if (!listing) return null;
 
@@ -132,23 +138,47 @@ export const ListingModal: React.FC<ListingModalProps> = ({
         </div>
 
         {/* Footer */}
-        <div className="p-4 bg-gray-50 border-t border-gray-100 flex items-center justify-end space-x-3">
-          <button
-            onClick={onClose}
-            className="px-4 py-2 text-xs font-semibold text-gray-600 hover:text-gray-800 transition"
-          >
-            Close
-          </button>
-          <button
-            onClick={() => {
-              onClose();
-              onRequestVisit(listing);
-            }}
-            className="inline-flex items-center space-x-2 px-5 py-2.5 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl shadow transition"
-          >
-            <Calendar className="w-4 h-4" />
-            <span>Schedule Property Visit</span>
-          </button>
+        <div className="p-4 bg-gray-50 border-t border-gray-100 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => {
+                onClose();
+                onGenerateLease(listing);
+              }}
+              className="inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-semibold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 rounded-xl transition"
+            >
+              <FileText className="w-3.5 h-3.5" />
+              <span>Generate Lease</span>
+            </button>
+            <button
+              onClick={() => {
+                onClose();
+                onGenerateAdCopy(listing);
+              }}
+              className="inline-flex items-center space-x-1.5 px-3 py-2 text-xs font-semibold text-indigo-700 bg-indigo-50 hover:bg-indigo-100 border border-indigo-200 rounded-xl transition"
+            >
+              <Megaphone className="w-3.5 h-3.5" />
+              <span>AI Ad Copy</span>
+            </button>
+          </div>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={onClose}
+              className="px-3 py-2 text-xs font-semibold text-gray-600 hover:text-gray-800 transition"
+            >
+              Close
+            </button>
+            <button
+              onClick={() => {
+                onClose();
+                onRequestVisit(listing);
+              }}
+              className="inline-flex items-center space-x-2 px-4 py-2 text-xs font-semibold text-white bg-green-600 hover:bg-green-700 rounded-xl shadow transition"
+            >
+              <Calendar className="w-4 h-4" />
+              <span>Schedule Visit</span>
+            </button>
+          </div>
         </div>
       </div>
     </div>

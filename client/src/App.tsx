@@ -6,6 +6,9 @@ import { ListingModal } from "./components/ListingModal";
 import { InquiryModal } from "./components/InquiryModal";
 import { PostListingModal } from "./components/PostListingModal";
 import { ConciergeDrawer } from "./components/ConciergeDrawer";
+import { LeaseGeneratorModal } from "./components/LeaseGeneratorModal";
+import { AdCopyModal } from "./components/AdCopyModal";
+import { McpConsoleDrawer } from "./components/McpConsoleDrawer";
 import { Listing, AreaStat } from "./types";
 import { Building2, Sparkles, TrendingUp, AlertCircle, RefreshCw } from "lucide-react";
 
@@ -25,8 +28,11 @@ export const App: React.FC = () => {
   // Modals
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
   const [inquiryListing, setInquiryListing] = useState<Listing | null>(null);
+  const [leaseListing, setLeaseListing] = useState<Listing | null>(null);
+  const [adCopyListing, setAdCopyListing] = useState<Listing | null>(null);
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
+  const [isMcpConsoleOpen, setIsMcpConsoleOpen] = useState(false);
 
   const fetchListings = async () => {
     setIsLoading(true);
@@ -76,6 +82,7 @@ export const App: React.FC = () => {
         onRoleChange={setRole}
         onOpenPostModal={() => setIsPostModalOpen(true)}
         onOpenConcierge={() => setIsConciergeOpen(true)}
+        onOpenMcpConsole={() => setIsMcpConsoleOpen(true)}
       />
 
       <main className="flex-1 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
@@ -180,6 +187,25 @@ export const App: React.FC = () => {
         listing={selectedListing}
         onClose={() => setSelectedListing(null)}
         onRequestVisit={(l) => setInquiryListing(l)}
+        onGenerateLease={(l) => setLeaseListing(l)}
+        onGenerateAdCopy={(l) => setAdCopyListing(l)}
+      />
+
+      <LeaseGeneratorModal
+        key={leaseListing?._id ?? "none"}
+        listing={leaseListing}
+        onClose={() => setLeaseListing(null)}
+      />
+
+      <AdCopyModal
+        key={adCopyListing?._id ?? "none"}
+        listing={adCopyListing}
+        onClose={() => setAdCopyListing(null)}
+      />
+
+      <McpConsoleDrawer
+        isOpen={isMcpConsoleOpen}
+        onClose={() => setIsMcpConsoleOpen(false)}
       />
 
       <InquiryModal
