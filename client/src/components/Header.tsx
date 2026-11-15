@@ -1,11 +1,12 @@
 import React from "react";
-import { Building2, PlusCircle, Sparkles, UserCheck, Shield } from "lucide-react";
+import { Building2, PlusCircle, Sparkles, UserCheck, Shield, Terminal } from "lucide-react";
 
 interface HeaderProps {
   role: "renter" | "landlord";
   onRoleChange: (newRole: "renter" | "landlord") => void;
   onOpenPostModal: () => void;
   onOpenConcierge: () => void;
+  onOpenMcpConsole: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -13,6 +14,7 @@ export const Header: React.FC<HeaderProps> = ({
   onRoleChange,
   onOpenPostModal,
   onOpenConcierge,
+  onOpenMcpConsole,
 }) => {
   return (
     <header className="sticky top-0 z-40 bg-white border-b border-gray-200 shadow-sm">
@@ -38,7 +40,17 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Action Controls */}
-        <div className="flex items-center space-x-3 sm:space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-3">
+          {/* MCP Console trigger */}
+          <button
+            onClick={onOpenMcpConsole}
+            className="flex items-center space-x-1.5 px-2.5 py-1.5 text-xs font-medium text-slate-700 bg-slate-100 border border-slate-200 rounded-lg hover:bg-slate-200 transition shadow-sm"
+            title="Open MCP Server Console"
+          >
+            <Terminal className="w-3.5 h-3.5 text-slate-600" />
+            <span className="hidden md:inline">MCP</span>
+          </button>
+
           {/* AI Concierge quick trigger */}
           <button
             onClick={onOpenConcierge}

@@ -5,6 +5,7 @@ import mongoose from "mongoose";
 import { listingsRouter } from "./routes/listings";
 import { inquiriesRouter } from "./routes/inquiries";
 import { aiRouter } from "./routes/ai";
+import { mcpRouter } from "./routes/mcp";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.get("/health", (_req: Request, res: Response) => {
 app.use("/api/listings", listingsRouter);
 app.use("/api/inquiries", inquiriesRouter);
 app.use("/api/ai", aiRouter);
+app.use("/api/mcp", mcpRouter);
 
 // Centralized Error Handling Middleware
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
