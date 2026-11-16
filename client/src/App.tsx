@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "./components/Header";
-import { FilterBar } from "./components/FilterBar";
+import { FilterBar, SortOption } from "./components/FilterBar";
 import { ListingCard } from "./components/ListingCard";
 import { ListingModal } from "./components/ListingModal";
 import { InquiryModal } from "./components/InquiryModal";
@@ -13,7 +13,26 @@ import { Listing, AreaStat } from "./types";
 import { apiUrl } from "./lib/api";
 import { Building2, Sparkles, TrendingUp, AlertCircle, RefreshCw } from "lucide-react";
 
+const VALID_SORTS: SortOption[] = ["newest", "rent_asc", "rent_desc", "sqft_desc"];
+
+function getInitialFilters() {
+  const params = new URLSearchParams(window.location.search);
+  const rawMaxRent = Number(params.get("maxRent"));
+  const rawMinSqft = Number(params.get("minSqft"));
+  const rawSort = params.get("sort") as SortOption | null;
+
+  return {
+    category: params.get("category") || "all",
+    area: params.get("area") || "all",
+    maxRent: !isNaN(rawMaxRent) && rawMaxRent >= 15000 && rawMaxRent <= 300000 ? rawMaxRent : 300000,
+    minSqft: !isNaN(rawMinSqft) && rawMinSqft > 0 ? rawMinSqft : 0,
+    sort: rawSort && VALID_SORTS.includes(rawSort) ? rawSort : "newest",
+    q: params.get("q") || "",
+  };
+}
+
 export const App: React.FC = () => {
+  const [initialFilters] = useState(getInitialFilters);
   const [role, setRole] = useState<"renter" | "landlord">("renter");
   const [listings, setListings] = useState<Listing[]>([]);
   const [stats, setStats] = useState<AreaStat[]>([]);
@@ -21,10 +40,12 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [category, setCategory] = useState<string>("all");
-  const [area, setArea] = useState<string>("all");
-  const [maxRent, setMaxRent] = useState<number>(300000);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [category, setCategory] = useState<string>(initialFilters.category);
+  const [area, setArea] = useState<string>(initialFilters.area);
+  const [maxRent, setMaxRent] = useState<number>(initialFilters.maxRent);
+  const [minSqft, setMinSqft] = useState<number>(initialFilters.minSqft);
+  const [sort, setSort] = useState<SortOption>(initialFilters.sort);
+  const [searchQuery, setSearchQuery] = useState<string>(initialFilters.q);
 
   // Modals
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
@@ -35,16 +56,22 @@ export const App: React.FC = () => {
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
   const [isMcpConsoleOpen, setIsMcpConsoleOpen] = useState(false);
 
+  const buildFilterParams = () => {
+    const params = new URLSearchParams();
+    if (category !== "all") params.append("category", category);
+    if (area !== "all") params.append("area", area);
+    if (maxRent < 300000) params.append("maxRent", maxRent.toString());
+    if (minSqft > 0) params.append("minSqft", minSqft.toString());
+    if (sort !== "newest") params.append("sort", sort);
+    if (searchQuery.trim()) params.append("q", searchQuery.trim());
+    return params;
+  };
+
   const fetchListings = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (category !== "all") params.append("category", category);
-      if (area !== "all") params.append("area", area);
-      if (maxRent < 300000) params.append("maxRent", maxRent.toString());
-      if (searchQuery.trim()) params.append("q", searchQuery.trim());
-
+      const params = buildFilterParams();
       const res = await fetch(apiUrl(`/api/listings?${params.toString()}`));
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to load listings");
@@ -69,8 +96,12 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    const params = buildFilterParams();
+    const qs = params.toString();
+    const nextUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+    window.history.replaceState(null, "", nextUrl);
     fetchListings();
-  }, [category, area, maxRent, searchQuery]);
+  }, [category, area, maxRent, minSqft, sort, searchQuery]);
 
   useEffect(() => {
     fetchStats();
@@ -126,6 +157,10 @@ export const App: React.FC = () => {
           setArea={setArea}
           maxRent={maxRent}
           setMaxRent={setMaxRent}
+          minSqft={minSqft}
+          setMinSqft={setMinSqft}
+          sort={sort}
+          setSort={setSort}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           totalCount={listings.length}
