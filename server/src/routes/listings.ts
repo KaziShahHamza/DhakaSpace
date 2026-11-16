@@ -20,10 +20,18 @@ const createListingSchema = z.object({
   contactPhone: z.string().min(6, "Valid contact phone is required"),
 });
 
+const SORT_MAP: Record<string, Record<string, 1 | -1>> = {
+  newest: { createdAt: -1 },
+  rent_asc: { rentBdt: 1 },
+  rent_desc: { rentBdt: -1 },
+  sqft_desc: { sizeSqft: -1 },
+  sqft_asc: { sizeSqft: 1 },
+};
+
 // GET /api/listings - Filter & Search
 listingsRouter.get("/", async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { category, area, maxRent, minSqft, q } = req.query;
+    const { category, area, maxRent, minSqft, q, sort } = req.query;
     const filter: Record<string, unknown> = { available: true };
 
     if (category && typeof category === "string" && category !== "all") {
@@ -40,7 +48,7 @@ listingsRouter.get("/", async (req: Request, res: Response, next: NextFunction) 
     }
     if (minSqft) {
       const parsedMin = Number(minSqft);
-      if (!isNaN(parsedMin)) {
+      if (!isNaN(parsedMin) && parsedMin > 0) {
         filter.sizeSqft = { $gte: parsedMin };
       }
     }
@@ -48,7 +56,10 @@ listingsRouter.get("/", async (req: Request, res: Response, next: NextFunction) 
       filter.$text = { $search: q.trim() };
     }
 
-    const listings = await Listing.find(filter).sort({ createdAt: -1 });
+    const sortKey = typeof sort === "string" ? sort : "newest";
+    const sortSpec = SORT_MAP[sortKey] ?? SORT_MAP.newest;
+
+    const listings = await Listing.find(filter).sort(sortSpec);
     res.json({ success: true, count: listings.length, data: listings });
   } catch (error) {
     next(error);
