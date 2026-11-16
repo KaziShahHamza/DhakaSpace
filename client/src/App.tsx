@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Header } from "./components/Header";
-import { FilterBar } from "./components/FilterBar";
+import { FilterBar, SortOption } from "./components/FilterBar";
 import { ListingCard } from "./components/ListingCard";
 import { ListingModal } from "./components/ListingModal";
 import { InquiryModal } from "./components/InquiryModal";
@@ -9,11 +9,31 @@ import { ConciergeDrawer } from "./components/ConciergeDrawer";
 import { LeaseGeneratorModal } from "./components/LeaseGeneratorModal";
 import { AdCopyModal } from "./components/AdCopyModal";
 import { McpConsoleDrawer } from "./components/McpConsoleDrawer";
+import { CompareModal } from "./components/CompareModal";
 import { Listing, AreaStat } from "./types";
 import { apiUrl } from "./lib/api";
-import { Building2, Sparkles, TrendingUp, AlertCircle, RefreshCw } from "lucide-react";
+import { Building2, Sparkles, TrendingUp, AlertCircle, RefreshCw, Scale, X } from "lucide-react";
+
+const VALID_SORTS: SortOption[] = ["newest", "rent_asc", "rent_desc", "sqft_desc"];
+
+function getInitialFilters() {
+  const params = new URLSearchParams(window.location.search);
+  const rawMaxRent = Number(params.get("maxRent"));
+  const rawMinSqft = Number(params.get("minSqft"));
+  const rawSort = params.get("sort") as SortOption | null;
+
+  return {
+    category: params.get("category") || "all",
+    area: params.get("area") || "all",
+    maxRent: !isNaN(rawMaxRent) && rawMaxRent >= 15000 && rawMaxRent <= 300000 ? rawMaxRent : 300000,
+    minSqft: !isNaN(rawMinSqft) && rawMinSqft > 0 ? rawMinSqft : 0,
+    sort: rawSort && VALID_SORTS.includes(rawSort) ? rawSort : "newest",
+    q: params.get("q") || "",
+  };
+}
 
 export const App: React.FC = () => {
+  const [initialFilters] = useState(getInitialFilters);
   const [role, setRole] = useState<"renter" | "landlord">("renter");
   const [listings, setListings] = useState<Listing[]>([]);
   const [stats, setStats] = useState<AreaStat[]>([]);
@@ -21,10 +41,12 @@ export const App: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
 
   // Filters
-  const [category, setCategory] = useState<string>("all");
-  const [area, setArea] = useState<string>("all");
-  const [maxRent, setMaxRent] = useState<number>(300000);
-  const [searchQuery, setSearchQuery] = useState<string>("");
+  const [category, setCategory] = useState<string>(initialFilters.category);
+  const [area, setArea] = useState<string>(initialFilters.area);
+  const [maxRent, setMaxRent] = useState<number>(initialFilters.maxRent);
+  const [minSqft, setMinSqft] = useState<number>(initialFilters.minSqft);
+  const [sort, setSort] = useState<SortOption>(initialFilters.sort);
+  const [searchQuery, setSearchQuery] = useState<string>(initialFilters.q);
 
   // Modals
   const [selectedListing, setSelectedListing] = useState<Listing | null>(null);
@@ -34,17 +56,36 @@ export const App: React.FC = () => {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
   const [isMcpConsoleOpen, setIsMcpConsoleOpen] = useState(false);
+  const [compareListings, setCompareListings] = useState<Listing[]>([]);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+
+  const toggleCompareListing = (listing: Listing) => {
+    setCompareListings((prev) => {
+      const exists = prev.some((item) => item._id === listing._id);
+      if (exists) {
+        return prev.filter((item) => item._id !== listing._id);
+      }
+      if (prev.length >= 3) return prev;
+      return [...prev, listing];
+    });
+  };
+
+  const buildFilterParams = () => {
+    const params = new URLSearchParams();
+    if (category !== "all") params.append("category", category);
+    if (area !== "all") params.append("area", area);
+    if (maxRent < 300000) params.append("maxRent", maxRent.toString());
+    if (minSqft > 0) params.append("minSqft", minSqft.toString());
+    if (sort !== "newest") params.append("sort", sort);
+    if (searchQuery.trim()) params.append("q", searchQuery.trim());
+    return params;
+  };
 
   const fetchListings = async () => {
     setIsLoading(true);
     setError(null);
     try {
-      const params = new URLSearchParams();
-      if (category !== "all") params.append("category", category);
-      if (area !== "all") params.append("area", area);
-      if (maxRent < 300000) params.append("maxRent", maxRent.toString());
-      if (searchQuery.trim()) params.append("q", searchQuery.trim());
-
+      const params = buildFilterParams();
       const res = await fetch(apiUrl(`/api/listings?${params.toString()}`));
       const data = await res.json();
       if (!res.ok) throw new Error(data.message || "Failed to load listings");
@@ -69,8 +110,12 @@ export const App: React.FC = () => {
   };
 
   useEffect(() => {
+    const params = buildFilterParams();
+    const qs = params.toString();
+    const nextUrl = qs ? `${window.location.pathname}?${qs}` : window.location.pathname;
+    window.history.replaceState(null, "", nextUrl);
     fetchListings();
-  }, [category, area, maxRent, searchQuery]);
+  }, [category, area, maxRent, minSqft, sort, searchQuery]);
 
   useEffect(() => {
     fetchStats();
@@ -126,6 +171,10 @@ export const App: React.FC = () => {
           setArea={setArea}
           maxRent={maxRent}
           setMaxRent={setMaxRent}
+          minSqft={minSqft}
+          setMinSqft={setMinSqft}
+          sort={sort}
+          setSort={setSort}
           searchQuery={searchQuery}
           setSearchQuery={setSearchQuery}
           totalCount={listings.length}
@@ -168,11 +217,42 @@ export const App: React.FC = () => {
                 listing={item}
                 onSelect={(l) => setSelectedListing(l)}
                 onRequestVisit={(l) => setInquiryListing(l)}
+                isCompared={compareListings.some((c) => c._id === item._id)}
+                onToggleCompare={toggleCompareListing}
+                compareDisabled={compareListings.length >= 3}
               />
             ))}
           </div>
         )}
       </main>
+
+      {/* Floating Compare Bar */}
+      {compareListings.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 bg-slate-900 text-white px-4 py-2.5 rounded-full shadow-xl flex items-center gap-3 border border-slate-700">
+          <Scale className="w-4 h-4 text-emerald-400" />
+          <span className="text-xs font-semibold">
+            {compareListings.length}/3 selected
+          </span>
+          <button
+            onClick={() => setIsCompareOpen(true)}
+            disabled={compareListings.length < 2}
+            className={`px-3 py-1 rounded-full text-xs font-bold transition ${
+              compareListings.length >= 2
+                ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950"
+                : "bg-slate-700 text-slate-400 cursor-not-allowed"
+            }`}
+          >
+            Compare Now
+          </button>
+          <button
+            onClick={() => setCompareListings([])}
+            aria-label="Clear compare selection"
+            className="p-1 text-slate-400 hover:text-white transition"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Floating AI Concierge Trigger */}
       <button
@@ -221,6 +301,16 @@ export const App: React.FC = () => {
           fetchListings();
           fetchStats();
         }}
+      />
+
+      <CompareModal
+        listings={compareListings}
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        onRemove={(id) =>
+          setCompareListings((prev) => prev.filter((item) => item._id !== id))
+        }
+        onSelectListing={(l) => setSelectedListing(l)}
       />
 
       <ConciergeDrawer

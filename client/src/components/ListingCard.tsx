@@ -8,6 +8,7 @@ import {
   Layers,
   Calendar,
   CheckCircle2,
+  Scale,
 } from "lucide-react";
 import { Listing } from "../types";
 
@@ -15,12 +16,18 @@ interface ListingCardProps {
   listing: Listing;
   onSelect: (listing: Listing) => void;
   onRequestVisit: (listing: Listing) => void;
+  isCompared?: boolean;
+  onToggleCompare?: (listing: Listing) => void;
+  compareDisabled?: boolean;
 }
 
 export const ListingCard: React.FC<ListingCardProps> = ({
   listing,
   onSelect,
   onRequestVisit,
+  isCompared = false,
+  onToggleCompare,
+  compareDisabled = false,
 }) => {
   const getCategoryIcon = () => {
     switch (listing.category) {
@@ -130,13 +137,32 @@ export const ListingCard: React.FC<ListingCardProps> = ({
       </div>
 
       {/* Action Footer */}
-      <div className="px-5 py-3.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between">
-        <button
-          onClick={() => onSelect(listing)}
-          className="text-xs font-semibold text-gray-700 hover:text-green-700 transition"
-        >
-          View Details
-        </button>
+      <div className="px-5 py-3.5 bg-gray-50 border-t border-gray-100 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => onSelect(listing)}
+            className="text-xs font-semibold text-gray-700 hover:text-green-700 transition"
+          >
+            View Details
+          </button>
+          {onToggleCompare && (
+            <button
+              onClick={() => onToggleCompare(listing)}
+              disabled={!isCompared && compareDisabled}
+              title={!isCompared && compareDisabled ? "Max 3 properties can be compared" : "Toggle compare"}
+              className={`inline-flex items-center space-x-1 text-xs font-semibold px-2 py-1 rounded-lg border transition ${
+                isCompared
+                  ? "bg-emerald-50 text-emerald-700 border-emerald-300"
+                  : compareDisabled
+                  ? "text-gray-300 border-gray-200 cursor-not-allowed"
+                  : "text-gray-600 border-gray-200 hover:border-emerald-300 hover:text-emerald-700 bg-white"
+              }`}
+            >
+              <Scale className="w-3 h-3" />
+              <span>{isCompared ? "Added" : "Compare"}</span>
+            </button>
+          )}
+        </div>
         <button
           onClick={() => onRequestVisit(listing)}
           className="inline-flex items-center space-x-1.5 px-3 py-1.5 text-xs font-semibold text-white bg-green-700 hover:bg-green-800 rounded-lg shadow-sm transition"
