@@ -9,9 +9,10 @@ import { ConciergeDrawer } from "./components/ConciergeDrawer";
 import { LeaseGeneratorModal } from "./components/LeaseGeneratorModal";
 import { AdCopyModal } from "./components/AdCopyModal";
 import { McpConsoleDrawer } from "./components/McpConsoleDrawer";
+import { CompareModal } from "./components/CompareModal";
 import { Listing, AreaStat } from "./types";
 import { apiUrl } from "./lib/api";
-import { Building2, Sparkles, TrendingUp, AlertCircle, RefreshCw } from "lucide-react";
+import { Building2, Sparkles, TrendingUp, AlertCircle, RefreshCw, Scale, X } from "lucide-react";
 
 const VALID_SORTS: SortOption[] = ["newest", "rent_asc", "rent_desc", "sqft_desc"];
 
@@ -55,6 +56,19 @@ export const App: React.FC = () => {
   const [isPostModalOpen, setIsPostModalOpen] = useState(false);
   const [isConciergeOpen, setIsConciergeOpen] = useState(false);
   const [isMcpConsoleOpen, setIsMcpConsoleOpen] = useState(false);
+  const [compareListings, setCompareListings] = useState<Listing[]>([]);
+  const [isCompareOpen, setIsCompareOpen] = useState(false);
+
+  const toggleCompareListing = (listing: Listing) => {
+    setCompareListings((prev) => {
+      const exists = prev.some((item) => item._id === listing._id);
+      if (exists) {
+        return prev.filter((item) => item._id !== listing._id);
+      }
+      if (prev.length >= 3) return prev;
+      return [...prev, listing];
+    });
+  };
 
   const buildFilterParams = () => {
     const params = new URLSearchParams();
@@ -203,11 +217,42 @@ export const App: React.FC = () => {
                 listing={item}
                 onSelect={(l) => setSelectedListing(l)}
                 onRequestVisit={(l) => setInquiryListing(l)}
+                isCompared={compareListings.some((c) => c._id === item._id)}
+                onToggleCompare={toggleCompareListing}
+                compareDisabled={compareListings.length >= 3}
               />
             ))}
           </div>
         )}
       </main>
+
+      {/* Floating Compare Bar */}
+      {compareListings.length > 0 && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-30 bg-slate-900 text-white px-4 py-2.5 rounded-full shadow-xl flex items-center gap-3 border border-slate-700">
+          <Scale className="w-4 h-4 text-emerald-400" />
+          <span className="text-xs font-semibold">
+            {compareListings.length}/3 selected
+          </span>
+          <button
+            onClick={() => setIsCompareOpen(true)}
+            disabled={compareListings.length < 2}
+            className={`px-3 py-1 rounded-full text-xs font-bold transition ${
+              compareListings.length >= 2
+                ? "bg-emerald-500 hover:bg-emerald-400 text-slate-950"
+                : "bg-slate-700 text-slate-400 cursor-not-allowed"
+            }`}
+          >
+            Compare Now
+          </button>
+          <button
+            onClick={() => setCompareListings([])}
+            aria-label="Clear compare selection"
+            className="p-1 text-slate-400 hover:text-white transition"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Floating AI Concierge Trigger */}
       <button
@@ -256,6 +301,16 @@ export const App: React.FC = () => {
           fetchListings();
           fetchStats();
         }}
+      />
+
+      <CompareModal
+        listings={compareListings}
+        isOpen={isCompareOpen}
+        onClose={() => setIsCompareOpen(false)}
+        onRemove={(id) =>
+          setCompareListings((prev) => prev.filter((item) => item._id !== id))
+        }
+        onSelectListing={(l) => setSelectedListing(l)}
       />
 
       <ConciergeDrawer
